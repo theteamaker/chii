@@ -10,9 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Publish to Dockerhub Registry
-      uses: elgohr/Publish-Docker-Github-Action@2.8
+    - name: Publish to GitHub Container Registry
+      uses: docker/build-push-action@v1
       with:
-        name: theteamaker/yuu
-        username: ${{ secrets.DOCKER_USERNAME }}
+        name: theteamaker/chii
+        username: ${{ secrets.DOCKER_USESRNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+        registry: ghcr.io
+        repository: theteamaker/chii
+        tags: latest
