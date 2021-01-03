@@ -1,6 +1,6 @@
 FROM python:3-slim-buster
 
-RUN apt update && apt install ffmpeg -y
+RUN apt update && apt install ffmpeg gcc -y
 
 COPY *.py /app/
 COPY requirements.txt /app/
@@ -12,6 +12,6 @@ RUN mkdir /app/data
 
 WORKDIR /app
 
-RUN pip install -r requirements.txt && apt autoremove -y
+RUN pip install -r requirements.txt && apt remove gcc -y && apt autoremove -y
 
 CMD python chii.py
