@@ -4,3 +4,4 @@ __pycache__
 cog/__pycache__
 env
 docker-compose.yml
+secrets.env

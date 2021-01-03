@@ -9,6 +9,7 @@ RUN mkdir -p /app/cogs
 COPY cogs/ /app/cogs/
 
 RUN mkdir /app/data
+RUN mkdir /app/data/temp
 
 WORKDIR /app
 
