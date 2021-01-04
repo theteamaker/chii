@@ -24,7 +24,7 @@ def nightcoreify(rate, link):
         
         source = discord.FFmpegOpusAudio(
             filename, 
-            options=f'-filter:a "volume=0.63" -filter_complex [0:a:0]asetrate={rate}*48k,aresample=resampler=soxr:precision=24:osf=s32:tsf=s32p:osr=48k[out] -map [out]'
+            options=f'-filter_complex [0:a:0]volume=0.15,asetrate={rate}*48k,aresample=resampler=soxr:precision=24:osf=s32:tsf=s32p:osr=48k[out] -map [out]'
             )
     
         return source, filename
