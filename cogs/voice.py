@@ -97,7 +97,7 @@ class Voice(commands.Cog):
             await play()
             add_count(args)
 
-    @commands.command(aliases=["nc"])
+    @commands.command(aliases=["nc", "nightcore"])
     async def nightcoreify(self, ctx, *args):
         general_usage = "usage: `nightcoreify <rate> <link>. rate can be any float between 1 and 2."
         active_client = await fn_join(ctx)
@@ -120,7 +120,7 @@ class Voice(commands.Cog):
             return
         
         try:
-            nc = nightcoreify(args[0], args[1])
+            nc = nightcoreify(args[0], args[1].strip("<").rstrip(">"))
         except:
             await ctx.send("Something went wrong! Are you sure you provided a valid link?")
             return

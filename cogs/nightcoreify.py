@@ -1,6 +1,7 @@
 from discord.ext import commands
 import youtube_dl, tempfile, discord
-from env import TEMP_DIR
+
+TEMP_DIR = "../data/temp/"
 
 def nightcoreify(rate, link):
     ydl_opts = {
@@ -24,7 +25,7 @@ def nightcoreify(rate, link):
         
         source = discord.FFmpegOpusAudio(
             filename, 
-            options=f'-filter_complex [0:a:0]asetrate={rate}*48k,aresample=resampler=soxr:precision=24:osf=s32:tsf=s32p:osr=48k[out] -map [out]'
+            options=f'-filter:a "volume=0.63" -filter_complex [0:a:0]asetrate={rate}*48k,aresample=resampler=soxr:precision=24:osf=s32:tsf=s32p:osr=48k[out] -map [out]'
             )
     
         return source, filename
