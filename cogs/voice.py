@@ -1,6 +1,8 @@
 from discord.ext import commands
 from cogs.tts import gen_speech
 from env import TEMP_DIR
+from cogs.configuration import count_db, limit_safe, bot_author
+
 import tempfile, discord, asyncio
 
 async def fn_join(ctx):
@@ -30,6 +32,20 @@ async def fn_join(ctx):
 
     return active_client
 
+def add_count(args):
+    count = count_db.find_one(name="count")
+
+    try:
+        if type(count["total"]) is int:
+            count = count["total"]
+    except:
+        pass
+
+    if count is None:
+        count = 0
+
+    count_db.upsert(dict(name="count", total=int(count + len(args))), ["name"])
+
 def setup(bot):
     bot.add_cog(Voice(bot))
 
@@ -38,13 +54,17 @@ class Voice(commands.Cog):
         self.bot = bot
 
     @commands.command(aliases=['speak'])
+    @commands.check(limit_safe)
     async def tts(self, ctx, *, args):
         active_client = await fn_join(ctx)
-
+        
         to_delete = None
         source = None
         
         if active_client is None:                   # so she doesn't do messy things with files and clients that don't exist
+            return
+
+        if active_client.is_playing():
             return
 
         with tempfile.NamedTemporaryFile(suffix='.ogg', dir=TEMP_DIR) as t:
@@ -57,8 +77,10 @@ class Voice(commands.Cog):
                 await asyncio.sleep(0.1)
             
             await play()
+            add_count(args)
     
     @commands.command()
+    @commands.check(limit_safe)
     async def ssml(self, ctx, *, args):
         active_client = await fn_join(ctx)
 
@@ -78,7 +100,8 @@ class Voice(commands.Cog):
                 await asyncio.sleep(0.1)
             
             await play()
-    
+            add_count(args)
+
     @commands.command()
     async def stop(self, ctx):
         user = ctx.author
@@ -108,3 +131,32 @@ class Voice(commands.Cog):
             return
         
         await active_client.disconnect()
+    
+    @commands.command()
+    async def count(self, ctx):
+        count_var = count_db.find_one(name="count")
+        if count_var is None:
+            await ctx.send("No count to keep track of!")
+            return
+        
+        await ctx.send(f"The current character count is {count_var['total']}.")
+    
+    @commands.command()
+    @commands.check(bot_author)
+    async def reset_character_count(self, ctx, arg):
+        previous_count_var = count_db.find_one(name="count")
+
+        if previous_count_var is None:
+            await ctx.send("No count to keep track of!")
+            return
+        
+        try:
+            int_arg = int(arg)
+        except:
+            await ctx.send("Can't convert argument to integer! Try again.")
+            return
+        
+        previous_count_var = previous_count_var["total"]
+
+        count_db.upsert(dict(name="count", total=int_arg), ["name"])
+        await ctx.send(f"Total was previously {previous_count_var}. Has been updated to {int_arg}.")

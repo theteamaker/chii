@@ -1,8 +1,9 @@
 import dataset, re
 from discord.ext import commands
-from env import SERVERS_DB, BOT_OWNER_ID
+from env import SERVERS_DB, BOT_OWNER_ID, COUNT_DB
 
 servers_db = dataset.connect(SERVERS_DB)["servers"]
+count_db = dataset.connect(COUNT_DB)["table"]
 
 DEFAULT_PREFIX = "'"
 general_error = "Something went wrong! Feel free to submit an issue at https://github.com/theteamaker/chii."
@@ -58,3 +59,21 @@ class Configuration(commands.Cog):
             await ctx.send(f"The bot's prefix for this server has been successfully set to `{args[0]}`!")
         except:
             await ctx.send(general_error)
+
+async def limit_safe(ctx):
+    count = count_db.find_one(name="count")
+
+    if count is not None:
+            if count["total"] >= 3500000:
+                await ctx.send("The maximum character limit has been reached! Please consult the bot creator.")
+                return False
+            else:
+                return True
+    
+    if count is None:
+        return True
+
+async def bot_author(ctx):
+    bot_owner_id = int(BOT_OWNER_ID)
+    return ctx.message.author.id == bot_owner_id
+    
