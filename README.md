@@ -1,6 +1,6 @@
 # Chii - twin's Cool Bot for Amazon Polly
 
-A bot designed to let Mizuki be heard once again.
+A bot designed to let Mizuki be heard once again. **Also, Nightcore!**
 
 **Unfortunately**, I can't give out the link to my instance of this bot. The AWS Polly API's limits aren't especially forgiving, and paying for Mizuki isn't something I'm up for.
 
