@@ -1,7 +1,6 @@
 from discord.ext import commands
 import youtube_dl, tempfile, discord
-
-TEMP_DIR = "../data/temp/"
+from env import TEMP_DIIR
 
 def nightcoreify(rate, link):
     ydl_opts = {
