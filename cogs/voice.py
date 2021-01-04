@@ -57,7 +57,28 @@ class Voice(commands.Cog):
                 await asyncio.sleep(0.1)
             
             await play()
+    
+    @commands.command()
+    async def ssml(self, ctx, *, args):
+        active_client = await fn_join(ctx)
+
+        to_delete = None
+        source = None
         
+        if active_client is None:                   # so she doesn't do messy things with files and clients that don't exist
+            return
+
+        with tempfile.NamedTemporaryFile(suffix='.ogg', dir=TEMP_DIR) as t:
+            t.write(gen_speech("Mizuki", args, TextType="ssml"))
+            t.seek(0)
+            source = await discord.FFmpegOpusAudio.from_probe(t.name)
+
+            async def play():
+                active_client.play(source)          # not incredibly elegant, but works
+                await asyncio.sleep(0.1)
+            
+            await play()
+    
     @commands.command()
     async def stop(self, ctx):
         user = ctx.author
