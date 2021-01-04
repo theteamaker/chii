@@ -61,9 +61,8 @@ class Voice(commands.Cog):
         to_delete = None
         source = None
 
-        if (
-            active_client is None or active_client.is_playing()
-        ):  # so she doesn't do messy things with files and clients that don't exist
+        # so she doesn't do messy things with files and clients that don't exist
+        if active_client is None or active_client.is_playing():
             return
 
         with tempfile.NamedTemporaryFile(suffix=".ogg", dir=TEMP_DIR) as t:
@@ -72,7 +71,8 @@ class Voice(commands.Cog):
             source = await discord.FFmpegOpusAudio.from_probe(t.name)
 
             async def play():
-                active_client.play(source)  # not incredibly elegant, but works
+                # not incredibly elegant, but works
+                active_client.play(source)
                 await asyncio.sleep(0.1)
 
             await play()
@@ -95,7 +95,8 @@ class Voice(commands.Cog):
             source = await discord.FFmpegOpusAudio.from_probe(t.name)
 
             async def play():
-                active_client.play(source)  # not incredibly elegant, but works
+                # not incredibly elegant, but works
+                active_client.play(source)
                 await asyncio.sleep(0.1)
 
             await play()
@@ -134,11 +135,13 @@ class Voice(commands.Cog):
             return
 
         async def play():
-            active_client.play(nc[0])  # not incredibly elegant, but works
+            # not incredibly elegant, but works
+            active_client.play(nc[0])
             await asyncio.sleep(0.1)
 
         await play()
-        os.remove(nc[1])  # okay, maybe not elegant at all
+        # okay, maybe not elegant at all
+        os.remove(nc[1])
 
     @commands.command()
     async def stop(self, ctx):

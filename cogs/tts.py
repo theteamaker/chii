@@ -4,9 +4,8 @@ from botocore.config import Config
 polly = boto3.client("polly")
 
 
-def gen_speech(
-    voiceid, text, TextType="text"
-):  # Returns a StreamingBody whose contents should be thrown into an ogg.
+def gen_speech(voiceid, text, TextType="text"):
+    """Returns a StreamingBody whose contents should be thrown into an ogg."""
 
     tts = polly.synthesize_speech(
         Engine="standard",

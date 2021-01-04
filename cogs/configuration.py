@@ -6,7 +6,7 @@ servers_db = dataset.connect(SERVERS_DB)["servers"]
 count_db = dataset.connect(COUNT_DB)["table"]
 
 DEFAULT_PREFIX = "'"
-general_error = "Something went wrong! Feel free to submit an issue at https://github.com/theteamaker/chii."
+GENERAL_ERROR = "Something went wrong! Feel free to submit an issue at https://github.com/theteamaker/chii."
 
 
 def setup(bot):
@@ -69,7 +69,7 @@ class Configuration(commands.Cog):
                 f"The bot's prefix for this server has been successfully set to `{args[0]}`!"
             )
         except:
-            await ctx.send(general_error)
+            await ctx.send(GENERAL_ERROR)
 
 
 async def limit_safe(ctx):
