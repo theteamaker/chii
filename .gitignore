@@ -1,7 +1,10 @@
 .env
-data
-__pycache__
-cog/__pycache__
 env
-docker-compose.yml
 secrets.env
+
+data
+
+__pycache__/
+venv/
+
+docker-compose.yml
