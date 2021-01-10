@@ -25,6 +25,9 @@ def get_prefix(bot, message):
 
     return DEFAULT_PREFIX
 
+async def bot_author(ctx):
+    bot_owner_id = int(BOT_OWNER_ID)
+    return ctx.message.author.id == bot_owner_id
 
 class Configuration(commands.Cog):
     def __init__(self, bot):
@@ -44,7 +47,7 @@ class Configuration(commands.Cog):
             "You need the `Manage Channels` permission to change the prefix of this bot."
         )
         return check
-
+    
     @commands.command()
     @commands.check(has_permission)
     async def set_prefix(self, ctx, *args):
@@ -71,6 +74,11 @@ class Configuration(commands.Cog):
         except:
             await ctx.send(GENERAL_ERROR)
 
+    @commands.command()
+    @commands.check(bot_author)
+    async def cleanse(self, ctx):
+        for client in ctx.bot.voice_clients:
+            await client.disconnect()
 
 async def limit_safe(ctx):
     count = count_db.find_one(name="count")
@@ -86,8 +94,3 @@ async def limit_safe(ctx):
 
     if count is None:
         return True
-
-
-async def bot_author(ctx):
-    bot_owner_id = int(BOT_OWNER_ID)
-    return ctx.message.author.id == bot_owner_id

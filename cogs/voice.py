@@ -58,8 +58,6 @@ async def play(bot, active_client, source, ctx):
             
             if inactive_time == 900: # 15 minute timeout seems acceptable, will ponder as the bot runs
                 await active_client.disconnect()
-
-            if active_client.is_playing() is False
         
         fut = asyncio.run_coroutine_threadsafe(timeout(), bot.loop)
 
@@ -75,7 +73,7 @@ async def play(bot, active_client, source, ctx):
 class Voice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+
     @commands.command(aliases=["speak"])
     @commands.check(limit_safe)
     async def tts(self, ctx, *, args):
@@ -135,8 +133,8 @@ class Voice(commands.Cog):
             await ctx.send(general_usage)
             return
 
-        if float(args[0]) < 1 or float(args[0]) > 2:
-            await ctx.send("Rate must be any float between 1 and 2.")
+        if float(args[0]) <= 0 or float(args[0]) > 100:
+            await ctx.send("Rate must be such that 0 < x <= 100.")
             return
 
         try:
