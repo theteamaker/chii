@@ -52,7 +52,7 @@ async def play(bot, active_client, source, ctx):
     def after(error):
         async def timeout():
             inactive_time = 0
-            while active_client.is_playing() is False and inactive_time != 15:
+            while active_client.is_playing() is False and inactive_time != 900:
                 inactive_time += 1
                 await asyncio.sleep(1)
             
