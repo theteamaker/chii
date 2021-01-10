@@ -3,7 +3,7 @@ from cogs.tts import gen_speech
 from cogs.nightcoreify import nightcoreify
 from env import TEMP_DIR
 from cogs.configuration import count_db, limit_safe, bot_author
-import tempfile, discord, asyncio, os
+import tempfile, discord, asyncio, os, time
 
 
 async def fn_join(ctx):
@@ -48,11 +48,34 @@ def add_count(args):
 def setup(bot):
     bot.add_cog(Voice(bot))
 
+async def play(bot, active_client, source, ctx):
+    def after(error):
+        async def timeout():
+            inactive_time = 0
+            while active_client.is_playing() is False and inactive_time != 15:
+                inactive_time += 1
+                await asyncio.sleep(1)
+            
+            if inactive_time == 900: # 15 minute timeout seems acceptable, will ponder as the bot runs
+                await active_client.disconnect()
+
+            if active_client.is_playing() is False
+        
+        fut = asyncio.run_coroutine_threadsafe(timeout(), bot.loop)
+
+        try:
+            fut.result()
+        except Exception as e:
+            print(e)
+
+    # not incredibly elegant, but works
+    active_client.play(source, after=after)
+    await asyncio.sleep(0.1)
 
 class Voice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
+    
     @commands.command(aliases=["speak"])
     @commands.check(limit_safe)
     async def tts(self, ctx, *, args):
@@ -70,12 +93,7 @@ class Voice(commands.Cog):
             t.seek(0)
             source = await discord.FFmpegOpusAudio.from_probe(t.name)
 
-            async def play():
-                # not incredibly elegant, but works
-                active_client.play(source)
-                await asyncio.sleep(0.1)
-
-            await play()
+            await play(self.bot, active_client, source, ctx)
             add_count(args)
 
     @commands.command()
@@ -94,12 +112,7 @@ class Voice(commands.Cog):
             t.seek(0)
             source = await discord.FFmpegOpusAudio.from_probe(t.name)
 
-            async def play():
-                # not incredibly elegant, but works
-                active_client.play(source)
-                await asyncio.sleep(0.1)
-
-            await play()
+            await play(self.bot, active_client, source, ctx)
             add_count(args)
 
     @commands.command(aliases=["nc", "nightcore"])
@@ -127,21 +140,16 @@ class Voice(commands.Cog):
             return
 
         try:
-            nc = nightcoreify(args[0], args[1].strip("<").rstrip(">"))
+            source = nightcoreify(args[0], args[1].strip("<").rstrip(">"))
         except:
             await ctx.send(
                 "Something went wrong! Are you sure you provided a valid link?"
             )
             return
 
-        async def play():
-            # not incredibly elegant, but works
-            active_client.play(nc[0])
-            await asyncio.sleep(0.1)
-
-        await play()
+        await play(self.bot, active_client, source[0], ctx)
         # okay, maybe not elegant at all
-        os.remove(nc[1])
+        os.remove(source[1])
 
     @commands.command()
     async def stop(self, ctx):
